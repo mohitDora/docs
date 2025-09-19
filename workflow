@@ -1,4 +1,34 @@
-import React, { useState, useRef } from 'react';
+const removeItem = (itemId, type, parentId = null) => {
+    setWorkflow((prev) => {
+      if (type === "phase") {
+        return prev.filter((phase) => phase.id !== itemId);
+      }
+      return prev.map((phase) => {
+        if (type === "stage" && phase.id === parentId) {
+          return {
+            ...phase,
+            stages: phase.stages.filter((stage) => stage.id !== itemId)
+          };
+        }
+        if (type === "approval") {
+          return {
+            ...phase,
+            stages: phase.stages.map((stage) =>
+              stage.id === parentId
+                ? {
+                    ...stage,
+                    approvals: stage.approvals.filter(
+                      (approval) => approval.id !== itemId
+                    )
+                  }
+                : stage
+            )
+          };
+        }
+        return phase;
+      });
+    });
+  };import React, { useState, useRef } from 'react';
 
 // Recursive component to render a single workflow item and its children.
 const WorkflowItem = ({ item, type, onAdd, onRemove, onNameChange, onDragStart, onDragEnter, onDragOver, onDrop, getClasses, parentId }) => {
